@@ -19,9 +19,9 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
-    # Discord Credentials
-    discord_email: str = Field(...)
-    discord_password: str = Field(...)
+    # Discord Credentials (optional; if empty, bot will ask for manual login)
+    discord_email: str = Field(default="")
+    discord_password: str = Field(default="")
 
     # Browser Settings
     browser_headless: bool = Field(default=False)

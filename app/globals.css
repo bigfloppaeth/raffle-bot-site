@@ -1,8 +1,9 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #96b2d9;
+  --foreground: #0b1020;
+  --muted: rgba(11, 16, 32, 0.72);
 }
 
 @theme inline {
@@ -22,5 +23,10 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+/* Smooth scrolling for the down-arrow jump */
+html {
+  scroll-behavior: smooth;
 }

@@ -192,13 +192,25 @@ class DiscordRaffleBot:
         await self.page.goto("https://discord.com/login", wait_until="networkidle")
         await self._human_delay(2000, 3000)
 
-        # Enter email
-        print("Entering email...")
+        # If Discord credentials are not configured, fall back to manual login.
+        if not self.settings.discord_email or not self.settings.discord_password:
+            print("Discord email/password are not set in .env.")
+            print("Please log in manually in the opened browser window; the bot will wait.")
+            try:
+                await self.page.wait_for_url("**/channels/**", timeout=120000)  # 2 minutes
+                print("Login detected!")
+                await self._human_delay(2000, 3000)
+                return True
+            except PlaywrightTimeoutError:
+                print("Manual login was not detected in time.")
+                return False
+
+        # Automatic login using credentials from .env
+        print("Entering email from .env...")
         email_selector = 'input[name="email"]'
         if not await self._wait_for_element(email_selector, timeout=10000):
             print("Could not find email field - may need manual login")
             print("Please log in manually in the browser, then the bot will continue...")
-            # Wait for user to manually log in
             try:
                 await self.page.wait_for_url("**/channels/**", timeout=120000)  # 2 minutes
                 print("Login detected!")
@@ -209,8 +221,7 @@ class DiscordRaffleBot:
         await self._type_text(email_selector, self.settings.discord_email)
         await self._human_delay(500, 1000)
 
-        # Enter password
-        print("Entering password...")
+        print("Entering password from .env...")
         password_selector = 'input[name="password"]'
         if not await self._wait_for_element(password_selector, timeout=5000):
             print("Could not find password field")
@@ -219,15 +230,13 @@ class DiscordRaffleBot:
         await self._type_text(password_selector, self.settings.discord_password)
         await self._human_delay(500, 1000)
 
-        # Click login button
         print("Clicking login button...")
         login_button = 'button[type="submit"]'
         if not await self._click_element(login_button):
             print("Could not click login button")
             return False
 
-        # Wait for login to complete (or 2FA prompt)
-        print("Waiting for login to complete...")
+        print("Waiting for login to complete (or 2FA prompt)...")
         print("If 2FA is required, please complete it manually in the browser...")
         try:
             await self.page.wait_for_url("**/channels/**", timeout=120000)  # 2 minutes for 2FA

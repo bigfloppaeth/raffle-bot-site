@@ -1,0 +1,58 @@
+<svg width="1400" height="900" viewBox="0 0 1400 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1400" y2="900" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#96B2D9" stop-opacity="1"/>
+      <stop offset="1" stop-color="#E8F0FF" stop-opacity="1"/>
+    </linearGradient>
+    <linearGradient id="glass" x1="220" y1="160" x2="1180" y2="760" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF" stop-opacity="0.75"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0.35"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#10B981"/>
+      <stop offset="1" stop-color="#2563EB"/>
+    </linearGradient>
+    <filter id="shadow" x="0" y="0" width="1400" height="900" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="18" stdDeviation="22" flood-color="#0B1020" flood-opacity="0.18"/>
+    </filter>
+  </defs>
+
+  <rect width="1400" height="900" rx="48" fill="url(#bg)"/>
+
+  <!-- Decorative blobs -->
+  <circle cx="260" cy="240" r="160" fill="#10B981" fill-opacity="0.18"/>
+  <circle cx="1180" cy="220" r="190" fill="#2563EB" fill-opacity="0.14"/>
+  <circle cx="1120" cy="720" r="240" fill="#0B1020" fill-opacity="0.06"/>
+
+  <!-- Terminal card -->
+  <g filter="url(#shadow)">
+    <rect x="220" y="170" width="960" height="560" rx="26" fill="url(#glass)" stroke="#0B1020" stroke-opacity="0.10"/>
+    <rect x="220" y="170" width="960" height="58" rx="26" fill="#0B1020" fill-opacity="0.06"/>
+    <circle cx="255" cy="199" r="8" fill="#EF4444"/>
+    <circle cx="279" cy="199" r="8" fill="#F59E0B"/>
+    <circle cx="303" cy="199" r="8" fill="#10B981"/>
+
+    <!-- prompt -->
+    <g font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace" font-size="22">
+      <text x="270" y="285" fill="#0B1020" fill-opacity="0.90">$ python -m venv venv</text>
+      <text x="270" y="330" fill="#0B1020" fill-opacity="0.90">$ venv\Scripts\activate</text>
+      <text x="270" y="375" fill="#0B1020" fill-opacity="0.90">$ pip install -r requirements.txt</text>
+      <text x="270" y="420" fill="#0B1020" fill-opacity="0.90">$ python -m playwright install chromium</text>
+      <text x="270" y="465" fill="#0B1020" fill-opacity="0.90">$ python telegram_runner.py</text>
+      <text x="270" y="525" fill="#0B1020" fill-opacity="0.60"># /start � bot runs " /stats � results</text>
+    </g>
+
+    <!-- Accent bar -->
+    <rect x="220" y="716" width="960" height="14" fill="url(#accent)" fill-opacity="0.9"/>
+  </g>
+
+  <!-- Tiny bot mark -->
+  <g transform="translate(1020 600)">
+    <rect x="0" y="0" width="120" height="120" rx="28" fill="#0B1020" fill-opacity="0.08" stroke="#0B1020" stroke-opacity="0.12"/>
+    <rect x="28" y="40" width="64" height="48" rx="16" fill="#0B1020" fill-opacity="0.14"/>
+    <circle cx="46" cy="64" r="6" fill="#10B981"/>
+    <circle cx="74" cy="64" r="6" fill="#2563EB"/>
+    <path d="M32 26C44 14 76 14 88 26" stroke="#0B1020" stroke-opacity="0.20" stroke-width="6" stroke-linecap="round"/>
+  </g>
+</svg>
+

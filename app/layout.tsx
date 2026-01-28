@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Bebas_Neue } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -12,9 +12,16 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const bebas = Bebas_Neue({
+  weight: "400",
+  variable: "--font-display",
+  subsets: ["latin"],
+});
+
 export const metadata: Metadata = {
-  title: "Discord Raffle Bot — Setup",
-  description: "Guide + setup wizard to generate a ready-to-run Telegram-controlled raffle bot folder.",
+  title: "Automated Raffle Bot by BigFloppa",
+  description:
+    "Automated Raffle Bot (ARB): a Telegram-controlled browser bot that enters Discord raffles for you. Guide + setup wizard + one-click Windows setup.",
 };
 
 export default function RootLayout({
@@ -25,7 +32,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${bebas.variable} antialiased`}
       >
         {children}
       </body>

@@ -1,0 +1,61 @@
+<svg width="1200" height="800" viewBox="0 0 1200 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="800" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFFFF" stop-opacity="0.75"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0.35"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#10B981"/>
+      <stop offset="1" stop-color="#2563EB"/>
+    </linearGradient>
+    <filter id="shadow" x="0" y="0" width="1200" height="800" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="14" stdDeviation="18" flood-color="#0B1020" flood-opacity="0.16"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#shadow)">
+    <rect x="90" y="90" width="1020" height="620" rx="28" fill="url(#bg)" stroke="#0B1020" stroke-opacity="0.10"/>
+    <rect x="90" y="90" width="1020" height="12" fill="url(#accent)" fill-opacity="0.85"/>
+
+    <g font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial" fill="#0B1020">
+      <text x="140" y="160" font-size="34" font-weight="700">Get started in 4 steps</text>
+      <text x="140" y="198" font-size="18" fill-opacity="0.70">No coding required  paste your info, download, run.</text>
+    </g>
+
+    <!-- step cards -->
+    <g font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial">
+      <!-- 1 -->
+      <rect x="140" y="250" width="440" height="170" rx="20" fill="#FFFFFF" fill-opacity="0.55" stroke="#0B1020" stroke-opacity="0.10"/>
+      <circle cx="184" cy="296" r="22" fill="url(#accent)"/>
+      <text x="176" y="304" font-size="18" font-weight="800" fill="#FFFFFF">1</text>
+      <text x="220" y="292" font-size="22" font-weight="800" fill="#0B1020">Fill the wizard</text>
+      <text x="220" y="324" font-size="16" fill="#0B1020" fill-opacity="0.75">Telegram token (optional), TG user id (optional),</text>
+      <text x="220" y="346" font-size="16" fill="#0B1020" fill-opacity="0.75">Discord channel links.</text>
+
+      <!-- 2 -->
+      <rect x="620" y="250" width="440" height="170" rx="20" fill="#FFFFFF" fill-opacity="0.55" stroke="#0B1020" stroke-opacity="0.10"/>
+      <circle cx="664" cy="296" r="22" fill="url(#accent)"/>
+      <text x="656" y="304" font-size="18" font-weight="800" fill="#FFFFFF">2</text>
+      <text x="700" y="292" font-size="22" font-weight="800" fill="#0B1020">Download &amp; unzip</text>
+      <text x="700" y="324" font-size="16" fill="#0B1020" fill-opacity="0.75">Youll get a ready-to-run folder with</text>
+      <text x="700" y="346" font-size="16" fill="#0B1020" fill-opacity="0.75">.env + config.json generated.</text>
+
+      <!-- 3 -->
+      <rect x="140" y="450" width="440" height="170" rx="20" fill="#FFFFFF" fill-opacity="0.55" stroke="#0B1020" stroke-opacity="0.10"/>
+      <circle cx="184" cy="496" r="22" fill="url(#accent)"/>
+      <text x="176" y="504" font-size="18" font-weight="800" fill="#FFFFFF">3</text>
+      <text x="220" y="492" font-size="22" font-weight="800" fill="#0B1020">Run Windows setup</text>
+      <text x="220" y="524" font-size="16" fill="#0B1020" fill-opacity="0.75">Double-click setup_windows.bat</text>
+      <text x="220" y="546" font-size="16" fill="#0B1020" fill-opacity="0.75">(installs deps + Playwright Chromium).</text>
+
+      <!-- 4 -->
+      <rect x="620" y="450" width="440" height="170" rx="20" fill="#FFFFFF" fill-opacity="0.55" stroke="#0B1020" stroke-opacity="0.10"/>
+      <circle cx="664" cy="496" r="22" fill="url(#accent)"/>
+      <text x="656" y="504" font-size="18" font-weight="800" fill="#FFFFFF">4</text>
+      <text x="700" y="492" font-size="22" font-weight="800" fill="#0B1020">Start from Telegram</text>
+      <text x="700" y="524" font-size="16" fill="#0B1020" fill-opacity="0.75">Double-click start_telegram_bot.bat</text>
+      <text x="700" y="546" font-size="16" fill="#0B1020" fill-opacity="0.75">then send /start to your bot.</text>
+    </g>
+  </g>
+</svg>
+
