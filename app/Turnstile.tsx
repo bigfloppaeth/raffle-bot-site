@@ -28,6 +28,12 @@ type Props = {
 export function Turnstile({ siteKey, onToken }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const widgetIdRef = useRef<string | null>(null);
+  const onTokenRef = useRef(onToken);
+
+  // Keep latest callback without re-rendering the widget.
+  useEffect(() => {
+    onTokenRef.current = onToken;
+  }, [onToken]);
 
   useEffect(() => {
     if (!siteKey) return;
@@ -63,9 +69,9 @@ export function Turnstile({ siteKey, onToken }: Props) {
       widgetIdRef.current = window.turnstile.render(el, {
         sitekey: siteKey,
         theme: "auto",
-        callback: (token) => onToken(token),
-        "expired-callback": () => onToken(""),
-        "error-callback": () => onToken(""),
+        callback: (token) => onTokenRef.current(token),
+        "expired-callback": () => onTokenRef.current(""),
+        "error-callback": () => onTokenRef.current(""),
       });
     };
 
@@ -82,7 +88,7 @@ export function Turnstile({ siteKey, onToken }: Props) {
       }
       widgetIdRef.current = null;
     };
-  }, [siteKey, onToken]);
+  }, [siteKey]);
 
   if (!siteKey) {
     return (

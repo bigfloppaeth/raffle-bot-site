@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Turnstile } from "./Turnstile";
 
 type WizardState = {
@@ -30,6 +30,10 @@ export function SetupWizard() {
       .map((s) => s.trim())
       .filter(Boolean).length;
   }, [state.discordChannelLinks]);
+
+  const onCaptchaToken = useCallback((token: string) => {
+    setState((s) => ({ ...s, turnstileToken: token }));
+  }, []);
 
   async function onDownload() {
     setError(null);
@@ -157,7 +161,7 @@ export function SetupWizard() {
             <div className="text-sm font-medium">CAPTCHA</div>
             <Turnstile
               siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ""}
-              onToken={(token) => setState((s) => ({ ...s, turnstileToken: token }))}
+              onToken={onCaptchaToken}
             />
             <div className="text-xs text-zinc-600 dark:text-zinc-300">
               This prevents abuse of the download endpoint on the public site.
