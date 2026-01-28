@@ -9,6 +9,7 @@ type GenerateRequest = {
   discordChannelLinks: string; // newline-separated
   projectFolderName?: string;
   includeWindowsSetup?: boolean;
+  turnstileToken?: string;
 };
 
 function sanitizeFolderName(name: string) {
@@ -122,12 +123,76 @@ function readTemplateFiles(folderName: string) {
   return out;
 }
 
+// Basic in-memory per-IP rate limiting (works well enough on Vercel, but is not perfectly global).
+// For stronger protection across all regions/instances, swap this for Upstash/Vercel KV later.
+const RATE_LIMIT_WINDOW_MS = 60_000; // 1 minute
+const RATE_LIMIT_MAX = 5; // 5 downloads/min per IP
+const rateLimitHits = new Map<string, number[]>();
+
+function getClientIp(req: Request) {
+  // Vercel typically sets x-forwarded-for. Fall back to "unknown".
+  const xff = req.headers.get("x-forwarded-for");
+  if (xff) return xff.split(",")[0].trim();
+  return req.headers.get("x-real-ip") || "unknown";
+}
+
+function checkRateLimit(ip: string) {
+  const now = Date.now();
+  const cutoff = now - RATE_LIMIT_WINDOW_MS;
+  const hits = rateLimitHits.get(ip) || [];
+  const recent = hits.filter((t) => t > cutoff);
+  recent.push(now);
+  rateLimitHits.set(ip, recent);
+  return recent.length <= RATE_LIMIT_MAX;
+}
+
+async function verifyTurnstile(token: string, ip: string) {
+  const secret = process.env.TURNSTILE_SECRET_KEY;
+  if (!secret) {
+    return { ok: false, reason: "CAPTCHA is not configured on the server." };
+  }
+
+  const form = new URLSearchParams();
+  form.set("secret", secret);
+  form.set("response", token);
+  if (ip && ip !== "unknown") form.set("remoteip", ip);
+
+  const resp = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: form.toString(),
+  });
+
+  const data = (await resp.json().catch(() => null)) as
+    | { success?: boolean; "error-codes"?: string[] }
+    | null;
+
+  if (!data?.success) {
+    return { ok: false, reason: "CAPTCHA failed." };
+  }
+  return { ok: true as const };
+}
+
 export async function POST(request: Request) {
   let body: GenerateRequest;
   try {
     body = (await request.json()) as GenerateRequest;
   } catch {
     return NextResponse.json({ error: "Invalid JSON body." }, { status: 400 });
+  }
+
+  const ip = getClientIp(request);
+  if (!checkRateLimit(ip)) {
+    return NextResponse.json({ error: "Too many requests. Please try again in a minute." }, { status: 429 });
+  }
+
+  const token = body.turnstileToken?.trim() || "";
+  if (!token) {
+    return NextResponse.json({ error: "CAPTCHA is required." }, { status: 400 });
+  }
+  const captcha = await verifyTurnstile(token, ip);
+  if (!captcha.ok) {
+    return NextResponse.json({ error: captcha.reason }, { status: 400 });
   }
 
   const channels = normalizeLines(body.discordChannelLinks || "");
