@@ -1,0 +1,15 @@
+# Browser Automation
+playwright>=1.40.0
+
+# Configuration
+pydantic>=2.6.0
+pydantic-settings>=2.2.0
+python-dotenv>=1.0.0
+
+# Utilities
+python-dateutil>=2.8.2
+
+# Telegram control (optional)
+# 22.6+ includes a fix for the Updater/__polling_cleanup_cb bug
+python-telegram-bot==22.6
+
