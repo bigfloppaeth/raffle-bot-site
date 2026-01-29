@@ -1,42 +1,57 @@
-This is a [Next.js](https://nextjs.org) site for a Discord raffle bot.
+<div align="center">
 
-It includes:
+# 🤖 Discord Raffle Bot
+### Automated Alpha Hunter
 
-- A **guide page** explaining Telegram setup + config
-- A **setup wizard** that collects Telegram token/user id + Discord channel links
-- A backend endpoint that generates a **downloadable zip** containing a ready-to-run starter bot folder
+[![CodeQL](https://github.com/bigfloppaeth/raffle-bot-site/actions/workflows/codeql.yml/badge.svg)](https://github.com/bigfloppaeth/raffle-bot-site/actions/workflows/codeql.yml)
+[![Python](https://img.shields.io/badge/Made_with-Python_3.10+-blue?style=for-the-badge&logo=python)](https://python.org)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 
-## Getting Started
+<p align="center">
+  <b>Stop Clicking. Start Winning.</b><br>
+  A stealth, local browser automation tool that scans Discord channels and enters raffles while you sleep.<br>
+  <i>Powered by Playwright. Undetectable. Open Source.</i>
+</p>
 
-First, run the development server:
+</div>
+
+---
+
+### 🛡️ Security & Transparency
+
+We operate on a **"Don't Trust, Verify"** basis. This tool is designed for privacy and security.
+
+* ✅ **Verified Code:** Our source code is clean. Check the **CodeQL** badge above.
+* ✅ **Local Execution:** Your Discord tokens and passwords **never** leave your PC. The bot runs 100% locally.
+* ✅ **Open Source:** No obfuscation. You can audit every line in `src/`.
+* ✅ **Stealth:** Uses a real Chrome instance with unique fingerprints. No API bans.
+
+---
+
+## ⚡ Features
+
+* **👻 Ghost Mode:** Simulates human behavior with randomized delays, natural mouse curves, and scrolling. Discord sees a user, not a script.
+* **🧠 Smart Scanning:** Jumps to the newest messages and scans *upwards*. Automatically detects "Ended" raffles and moves to the next channel.
+* **🏭 Multi-Channel:** Process multiple Discord channels (by URL) from a config file.
+* **📱 Remote Control:** Start, stop, and get live stats directly from **Telegram**.
+* **🔐 Persistent Login:** Uses your existing Chrome profile. **No 2FA headaches**—login once, run forever.
+* **🪟 Minimized Mode:** Browser runs minimized while you work in other windows.
+
+---
+
+## 🚀 Installation & Setup
+
+### 1. Install Python Dependencies
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+# Create virtual environment
+python -m venv venv
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+# On Windows:
+venv\Scripts\activate
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+# On Mac/Linux:
+source venv/bin/activate
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# Install requirements
+pip install -r requirements.txt
