@@ -74,125 +74,130 @@ export function SetupWizard() {
   }
 
   return (
-    <section className="space-y-5">
-      <div className="rounded-xl border border-zinc-200 bg-white/60 p-5 shadow-sm backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/40">
-        <h2 className="text-xl font-semibold">Generate your ready-to-run bot folder</h2>
-        <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300">
-          Fill what you want, download a zip, and run it locally. Telegram fields are optional (you
-          can fill them later in <code className="rounded bg-zinc-100 px-1 dark:bg-zinc-900">.env</code>
-          ).
+    <div className="max-w-4xl mx-auto p-8 rounded-2xl border border-gray-800 bg-[#0F172A]/90 backdrop-blur-xl shadow-[0_0_40px_-10px_rgba(0,0,0,0.7)] relative overflow-hidden">
+      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-neon/50 to-transparent opacity-50" />
+
+      <h2 className="text-2xl font-bold text-white mb-2">Generate your ready-to-run bot folder</h2>
+      <p className="text-gray-400 text-sm mb-8">
+        Fill what you want, download a zip, and run it locally. Telegram fields are optional (you
+        can fill them later in{" "}
+        <code className="bg-black px-1 py-0.5 rounded text-neon font-mono text-xs">.env</code>).
+      </p>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div>
+          <label className="block text-xs font-mono text-gray-400 uppercase tracking-wider mb-2">
+            Project folder name
+          </label>
+          <input
+            type="text"
+            value={state.projectFolderName}
+            onChange={(e) => setState((s) => ({ ...s, projectFolderName: e.target.value }))}
+            className="w-full bg-black/40 border border-gray-700 text-white p-3 rounded-lg focus:outline-none focus:border-neon focus:ring-1 focus:ring-neon transition font-mono placeholder-gray-600"
+            placeholder="folder-name"
+          />
+        </div>
+        <div>
+          <label className="block text-xs font-mono text-gray-400 uppercase tracking-wider mb-2">
+            Telegram Allowed User ID <span className="text-gray-600">(Optional)</span>
+          </label>
+          <input
+            type="text"
+            value={state.telegramAllowedUserId}
+            onChange={(e) => setState((s) => ({ ...s, telegramAllowedUserId: e.target.value }))}
+            className="w-full bg-black/40 border border-gray-700 text-white p-3 rounded-lg focus:outline-none focus:border-neon focus:ring-1 focus:ring-neon transition font-mono placeholder-gray-600"
+            placeholder="123456789"
+          />
+        </div>
+      </div>
+
+      <div className="mb-6">
+        <label className="block text-xs font-mono text-gray-400 uppercase tracking-wider mb-2">
+          Telegram Bot Token <span className="text-gray-600">(Optional)</span>
+        </label>
+        <input
+          type="text"
+          value={state.telegramBotToken}
+          onChange={(e) => setState((s) => ({ ...s, telegramBotToken: e.target.value }))}
+          className="w-full bg-black/40 border border-gray-700 text-white p-3 rounded-lg focus:outline-none focus:border-neon focus:ring-1 focus:ring-neon transition font-mono placeholder-gray-600"
+          placeholder="123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11"
+        />
+        <p className="text-xs text-gray-500 mt-2">
+          If you don't want to share it with the site, leave it blank and fill it yourself in .env
+          after download.
         </p>
+      </div>
 
-        <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-2">
-          <label className="space-y-1">
-            <div className="text-sm font-medium">Project folder name</div>
-            <input
-              value={state.projectFolderName}
-              onChange={(e) => setState((s) => ({ ...s, projectFolderName: e.target.value }))}
-              className="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm outline-none ring-emerald-500/30 focus:ring-4 dark:border-zinc-800 dark:bg-zinc-950"
-              placeholder="discord-raffle-bot"
-            />
+      <div className="mb-6">
+        <div className="flex justify-between items-end mb-2">
+          <label className="block text-xs font-mono text-gray-400 uppercase tracking-wider">
+            Discord channel links (one per line)
           </label>
+          <span className="text-xs text-gray-500 font-mono">
+            {channelsCount} link{channelsCount === 1 ? "" : "s"}
+          </span>
+        </div>
+        <textarea
+          rows={5}
+          value={state.discordChannelLinks}
+          onChange={(e) => setState((s) => ({ ...s, discordChannelLinks: e.target.value }))}
+          className="w-full bg-black/40 border border-gray-700 text-green-400 p-3 rounded-lg focus:outline-none focus:border-neon focus:ring-1 focus:ring-neon transition font-mono text-sm placeholder-gray-700 resize-none"
+          placeholder={
+            "https://discord.com/channels/922262508247597077/1038563106386890853\nhttps://discord.com/channels/......"
+          }
+        />
+      </div>
 
-          <label className="space-y-1">
-            <div className="text-sm font-medium">
-              Telegram allowed user id <span className="text-zinc-500">(optional)</span>
-            </div>
-            <input
-              value={state.telegramAllowedUserId}
-              onChange={(e) => setState((s) => ({ ...s, telegramAllowedUserId: e.target.value }))}
-              className="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm outline-none ring-emerald-500/30 focus:ring-4 dark:border-zinc-800 dark:bg-zinc-950"
-              placeholder="123456789"
-            />
+      <div className="flex items-start gap-3 mb-6 p-4 border border-gray-800 rounded-lg bg-gray-900/50">
+        <div className="flex items-center h-5">
+          <input
+            id="setup_windows"
+            type="checkbox"
+            checked={state.includeWindowsSetup}
+            onChange={(e) => setState((s) => ({ ...s, includeWindowsSetup: e.target.checked }))}
+            className="w-4 h-4 text-neon bg-gray-800 border-gray-600 rounded focus:ring-neon focus:ring-2"
+          />
+        </div>
+        <div className="ml-1 text-sm">
+          <label htmlFor="setup_windows" className="font-medium text-gray-200">
+            Include Windows setup + shortcut helpers
           </label>
+          <p className="text-gray-500 mt-1">
+            Adds{" "}
+            <code className="bg-black/50 px-1 py-0.5 rounded text-gray-300 font-mono text-xs">
+              setup_windows.bat
+            </code>{" "}
+            (creates venv, installs deps, installs Playwright Chromium).
+          </p>
+        </div>
+      </div>
 
-          <label className="space-y-1 md:col-span-2">
-            <div className="text-sm font-medium">
-              Telegram bot token <span className="text-zinc-500">(optional)</span>
-            </div>
-            <input
-              value={state.telegramBotToken}
-              onChange={(e) => setState((s) => ({ ...s, telegramBotToken: e.target.value }))}
-              className="w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 font-mono text-sm outline-none ring-emerald-500/30 focus:ring-4 dark:border-zinc-800 dark:bg-zinc-950"
-              placeholder="123456:ABCDEF..."
-            />
-            <div className="text-xs text-zinc-600 dark:text-zinc-300">
-              If you don’t want to share it with the site, leave it blank and fill it yourself in{" "}
-              <code className="rounded bg-zinc-100 px-1 dark:bg-zinc-900">.env</code> after download.
-            </div>
-          </label>
+      {error ? (
+        <div className="mb-6 rounded-lg border border-red-900/60 bg-red-950/30 px-3 py-2 text-sm text-red-200">
+          {error}
+        </div>
+      ) : null}
 
-          <label className="space-y-1 md:col-span-2">
-            <div className="flex items-center justify-between gap-3">
-              <div className="text-sm font-medium">Discord channel links (one per line)</div>
-              <div className="text-xs text-zinc-600 dark:text-zinc-300">
-                {channelsCount} link{channelsCount === 1 ? "" : "s"}
-              </div>
-            </div>
-            <textarea
-              value={state.discordChannelLinks}
-              onChange={(e) => setState((s) => ({ ...s, discordChannelLinks: e.target.value }))}
-              className="min-h-28 w-full resize-y rounded-lg border border-zinc-200 bg-white px-3 py-2 font-mono text-sm outline-none ring-emerald-500/30 focus:ring-4 dark:border-zinc-800 dark:bg-zinc-950"
-              placeholder={[
-                "https://discord.com/channels/922262508247597077/1038563106386890853",
-                "https://discord.com/channels/....../......",
-              ].join("\n")}
-            />
-          </label>
-
-          <label className="flex items-start gap-3 md:col-span-2">
-            <input
-              type="checkbox"
-              className="mt-1 h-4 w-4 accent-emerald-600"
-              checked={state.includeWindowsSetup}
-              onChange={(e) => setState((s) => ({ ...s, includeWindowsSetup: e.target.checked }))}
-            />
-            <div>
-              <div className="text-sm font-medium">Include Windows setup + shortcut helpers</div>
-              <div className="text-xs text-zinc-600 dark:text-zinc-300">
-                Adds <code className="rounded bg-zinc-100 px-1 dark:bg-zinc-900">setup_windows.bat</code>{" "}
-                (creates venv, installs deps, installs Playwright Chromium) and a script to create a
-                Desktop shortcut to start the Telegram controller.
-              </div>
-            </div>
-          </label>
-
-          <div className="space-y-2 md:col-span-2">
-            <div className="text-sm font-medium">CAPTCHA</div>
+      <div className="flex flex-col md:flex-row items-center justify-between gap-6 pt-6 border-t border-gray-800">
+        <div className="grayscale opacity-90 hover:grayscale-0 hover:opacity-100 transition">
+          <div className="bg-white p-2 rounded border border-gray-300">
             <Turnstile
               siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ""}
               onToken={onCaptchaToken}
             />
-            <div className="text-xs text-zinc-600 dark:text-zinc-300">
-              This prevents abuse of the download endpoint on the public site.
-            </div>
           </div>
         </div>
 
-        {error ? (
-          <div className="mt-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-200">
-            {error}
-          </div>
-        ) : null}
-
-        <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <button
-            type="button"
-            onClick={onDownload}
-            disabled={isDownloading}
-            className="inline-flex items-center justify-center rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {isDownloading ? "Preparing zip…" : "Download configured zip"}
-          </button>
-
-          <div className="text-xs text-zinc-600 dark:text-zinc-300">
-            The zip includes <code className="rounded bg-zinc-100 px-1 dark:bg-zinc-900">.env</code>{" "}
-            and <code className="rounded bg-zinc-100 px-1 dark:bg-zinc-900">config.json</code>{" "}
-            already filled.
-          </div>
-        </div>
+        <button
+          type="button"
+          onClick={onDownload}
+          disabled={isDownloading}
+          className="w-full md:w-auto px-8 py-3 bg-neon text-black font-bold font-mono rounded hover:bg-white hover:scale-105 transition transform shadow-[0_0_15px_rgba(16,185,129,0.3)] disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100"
+        >
+          {isDownloading ? "PREPARING..." : "DOWNLOAD .ZIP"}
+        </button>
       </div>
-    </section>
+    </div>
   );
 }
 

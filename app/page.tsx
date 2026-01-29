@@ -50,8 +50,9 @@ export default function Home() {
         </h1>
 
         <p className="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
-          A stealthy, Playwright-based automation tool that scans, scrolls, and enters Discord
-          raffles while you sleep. <span className="text-white font-semibold">100% Local.</span>
+          A stealthy, Playwright-based automation tool by <span className="text-white font-semibold">BigFloppa</span>{" "}
+          that scans, scrolls, and enters Discord raffles while you sleep.{" "}
+          <span className="text-white font-semibold">100% Local.</span>
         </p>
 
         <div className="flex flex-col md:flex-row gap-4 justify-center items-center">
@@ -318,11 +319,35 @@ export default function Home() {
 
       <footer className="py-12 border-t border-gray-800 text-center">
         <p className="text-gray-500 font-mono text-sm mb-4">OPEN SOURCE • PYTHON • PLAYWRIGHT</p>
-        <p className="text-gray-600 text-xs">
-          Use responsibly. Automation should respect platform rules and rate limits.
-          <br />
-          Automated Raffle Bot by BigFloppa.
-        </p>
+        <div className="mx-auto flex max-w-2xl flex-col items-center justify-center gap-5 text-gray-600 text-xs md:flex-row md:items-start md:text-left">
+          <img
+            src="/bigfloppa.png"
+            alt="BigFloppa avatar"
+            className="h-16 w-16 rounded-full border border-gray-800 object-cover"
+          />
+          <div className="space-y-2">
+            <p>
+              Creator of this tool is{" "}
+              <span className="text-gray-300 font-semibold">BigFloppa</span>.
+            </p>
+            <p>
+              It was vibecoded in 2 days via{" "}
+              <span className="text-gray-300 font-semibold">Cursor</span>.
+            </p>
+            <p>
+              For any questions: DM me on{" "}
+              <a
+                href="https://x.com/BigFloppaEth"
+                className="text-neon font-mono hover:underline"
+                target="_blank"
+                rel="noreferrer"
+              >
+                X
+              </a>
+              .
+            </p>
+          </div>
+        </div>
       </footer>
     </main>
   );
