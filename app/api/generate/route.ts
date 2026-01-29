@@ -9,6 +9,7 @@ type GenerateRequest = {
   discordChannelLinks: string; // newline-separated
   projectFolderName?: string;
   includeWindowsSetup?: boolean;
+  targetOs?: "windows" | "mac" | "linux";
   turnstileToken?: string;
 };
 
@@ -65,19 +66,24 @@ function makeEnv(req: GenerateRequest) {
   return (out + "\n").replace(/\n{3,}/g, "\n\n");
 }
 
-function makeReadme(folderName: string) {
+function makeReadme(folderName: string, targetOs: "windows" | "mac" | "linux") {
+  const isWindows = targetOs === "windows";
+  const setupCmd = isWindows ? "setup_windows.bat" : "./setup_unix.sh";
+  const startCmd = isWindows ? "start_telegram_bot.bat" : "./start_telegram_bot.sh";
+
   return `# ${folderName}
 
 This folder was generated from the website setup wizard.
 
-## Quick start (Windows)
+## Quick start (${isWindows ? "Windows" : "macOS/Linux"})
 
-\`\`\`bat
-python -m venv venv
-call venv\\Scripts\\activate
-pip install -r requirements.txt
-python telegram_runner.py
-\`\`\`
+${isWindows ? "Run:" : "Run:"}
+
+${isWindows ? "```bat" : "```bash"}
+${isWindows ? "setup_windows.bat" : "chmod +x setup_unix.sh start_telegram_bot.sh"}
+${isWindows ? "" : setupCmd}
+${isWindows ? "start_telegram_bot.bat" : startCmd}
+${isWindows ? "```" : "```"}
 
 ## Notes
 
@@ -87,7 +93,7 @@ python telegram_runner.py
 `;
 }
 
-function readTemplateFiles(folderName: string) {
+function readTemplateFiles(folderName: string, targetOs: "windows" | "mac" | "linux") {
   const templateRoot = path.join(process.cwd(), "bot-template");
   const out: { path: string; data: string | Uint8Array }[] = [];
 
@@ -103,7 +109,9 @@ function readTemplateFiles(folderName: string) {
         rel.includes("/__pycache__/") ||
         rel.startsWith("venv/") ||
         rel.startsWith(".venv/") ||
-        rel.endsWith(".pyc")
+        rel.endsWith(".pyc") ||
+        // OS-specific: avoid shipping irrelevant launcher scripts
+        (targetOs !== "windows" && rel.toLowerCase().endsWith(".bat"))
       ) {
         continue;
       }
@@ -197,15 +205,37 @@ export async function POST(request: Request) {
 
   const channels = normalizeLines(body.discordChannelLinks || "");
   const folderName = sanitizeFolderName(body.projectFolderName || "discord-raffle-bot");
+  const targetOs: "windows" | "mac" | "linux" = body.targetOs || "windows";
+  const includeSetup = Boolean(body.includeWindowsSetup);
 
-  const templateFiles = readTemplateFiles(folderName);
+  const templateFiles = readTemplateFiles(folderName, targetOs);
 
   // Overwrite/ensure these generated config files are present.
-  templateFiles.push({ path: `${folderName}/README.md`, data: makeReadme(folderName) });
+  templateFiles.push({
+    path: `${folderName}/README.md`,
+    data: makeReadme(folderName, targetOs),
+  });
   templateFiles.push({ path: `${folderName}/.env`, data: makeEnv(body) });
   templateFiles.push({ path: `${folderName}/config.json`, data: makeConfigJson(channels) });
 
-  if (body.includeWindowsSetup) {
+  // Always include a start script appropriate for the OS.
+  if (targetOs !== "windows") {
+    templateFiles.push({
+      path: `${folderName}/start_telegram_bot.sh`,
+      data:
+        "#!/usr/bin/env bash\n" +
+        "set -euo pipefail\n" +
+        'cd "$(dirname "$0")"\n' +
+        "if [ -f \"venv/bin/activate\" ]; then\n" +
+        "  # shellcheck disable=SC1091\n" +
+        "  source \"venv/bin/activate\"\n" +
+        "fi\n" +
+        "python3 telegram_runner.py\n",
+    });
+  }
+
+  if (includeSetup) {
+    if (targetOs === "windows") {
     templateFiles.push({
       path: `${folderName}/setup_windows.bat`,
       data:
@@ -244,6 +274,22 @@ export async function POST(request: Request) {
         "echo Desktop shortcut created.\r\n" +
         "pause\r\n",
     });
+    } else {
+      templateFiles.push({
+        path: `${folderName}/setup_unix.sh`,
+        data:
+          "#!/usr/bin/env bash\n" +
+          "set -euo pipefail\n" +
+          'cd "$(dirname "$0")"\n' +
+          "python3 -m venv venv\n" +
+          // shellcheck is not guaranteed to exist; keep it plain.
+          "source \"venv/bin/activate\"\n" +
+          "python -m pip install --upgrade pip\n" +
+          "pip install -r requirements.txt\n" +
+          "python -m playwright install chromium\n" +
+          "echo \"Done. Next: ./start_telegram_bot.sh\"\n",
+      });
+    }
   }
 
   const zip = createZipStore(templateFiles);

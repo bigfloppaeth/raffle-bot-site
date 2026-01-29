@@ -4,6 +4,7 @@ import { useCallback, useMemo, useState } from "react";
 import { Turnstile } from "./Turnstile";
 
 type WizardState = {
+  targetOs: "windows" | "mac" | "linux";
   projectFolderName: string;
   telegramBotToken: string;
   telegramAllowedUserId: string;
@@ -14,6 +15,7 @@ type WizardState = {
 
 export function SetupWizard() {
   const [state, setState] = useState<WizardState>({
+    targetOs: "windows",
     projectFolderName: "discord-raffle-bot",
     telegramBotToken: "",
     telegramAllowedUserId: "",
@@ -84,6 +86,43 @@ export function SetupWizard() {
         <code className="bg-black px-1 py-0.5 rounded text-neon font-mono text-xs">.env</code>).
       </p>
 
+      <div className="mb-6">
+        <label className="block text-xs font-mono text-gray-400 uppercase tracking-wider mb-2">
+          Target OS
+        </label>
+        <div className="grid grid-cols-3 gap-3">
+          {(
+            [
+              { id: "windows", label: "Windows" },
+              { id: "mac", label: "macOS" },
+              { id: "linux", label: "Linux" },
+            ] as const
+          ).map((opt) => {
+            const active = state.targetOs === opt.id;
+            return (
+              <button
+                key={opt.id}
+                type="button"
+                onClick={() => setState((s) => ({ ...s, targetOs: opt.id }))}
+                className={[
+                  "w-full rounded-lg border px-3 py-2 text-sm font-mono transition",
+                  active
+                    ? "border-neon bg-black/40 text-white shadow-[0_0_12px_rgba(16,185,129,0.18)]"
+                    : "border-gray-800 bg-black/20 text-gray-400 hover:border-gray-700 hover:text-gray-200",
+                ].join(" ")}
+              >
+                {opt.label}
+              </button>
+            );
+          })}
+        </div>
+        <p className="text-xs text-gray-500 mt-2">
+          Windows gets <span className="font-mono text-gray-300">.bat</span> files; macOS/Linux gets{" "}
+          <span className="font-mono text-gray-300">.sh</span> files (run with{" "}
+          <span className="font-mono text-gray-300">chmod +x</span>).
+        </p>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <div>
           <label className="block text-xs font-mono text-gray-400 uppercase tracking-wider mb-2">
@@ -151,7 +190,7 @@ export function SetupWizard() {
       <div className="flex items-start gap-3 mb-6 p-4 border border-gray-800 rounded-lg bg-gray-900/50">
         <div className="flex items-center h-5">
           <input
-            id="setup_windows"
+            id="setup_scripts"
             type="checkbox"
             checked={state.includeWindowsSetup}
             onChange={(e) => setState((s) => ({ ...s, includeWindowsSetup: e.target.checked }))}
@@ -159,15 +198,16 @@ export function SetupWizard() {
           />
         </div>
         <div className="ml-1 text-sm">
-          <label htmlFor="setup_windows" className="font-medium text-gray-200">
-            Include Windows setup + shortcut helpers
+          <label htmlFor="setup_scripts" className="font-medium text-gray-200">
+            Include setup scripts + helpers
           </label>
           <p className="text-gray-500 mt-1">
             Adds{" "}
             <code className="bg-black/50 px-1 py-0.5 rounded text-gray-300 font-mono text-xs">
-              setup_windows.bat
+              {state.targetOs === "windows" ? "setup_windows.bat" : "setup_unix.sh"}
             </code>{" "}
-            (creates venv, installs deps, installs Playwright Chromium).
+            (creates venv, installs deps, installs Playwright Chromium)
+            {state.targetOs === "windows" ? " + Desktop shortcut creator." : "."}
           </p>
         </div>
       </div>
