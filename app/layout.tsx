@@ -1,27 +1,21 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Bebas_Neue } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-const bebas = Bebas_Neue({
-  weight: "400",
-  variable: "--font-display",
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains-mono",
   subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  title: "Automated Raffle Bot by BigFloppa",
+  title: "RaffleBot | Automated Alpha",
   description:
-    "Automated Raffle Bot (ARB): a Telegram-controlled browser bot that enters Discord raffles for you. Guide + setup wizard + one-click Windows setup.",
+    "A Telegram-controlled Playwright bot that scans Discord raffle channels and enters raffles from your own machine. Download a configured zip and get started fast.",
 };
 
 export default function RootLayout({
@@ -32,7 +26,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${bebas.variable} antialiased`}
+        className={`${inter.variable} ${jetbrainsMono.variable} antialiased`}
       >
         {children}
       </body>
