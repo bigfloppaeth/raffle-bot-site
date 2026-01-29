@@ -3,7 +3,7 @@
 # 🤖 Discord Raffle Bot
 ### Automated Alpha Hunter
 
-[![CodeQL](https://github.com/bigfloppaeth/raffle-bot-site/actions/workflows/codeql.yml/badge.svg)](https://github.com/bigfloppaeth/raffle-bot-site/actions/workflows/codeql.yml)
+[![CodeQL](https://github.com/bigfloppaeth/raffle-bot-site/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/bigfloppaeth/raffle-bot-site/actions/workflows/github-code-scanning/codeql)
 [![Python](https://img.shields.io/badge/Made_with-Python_3.10+-blue?style=for-the-badge&logo=python)](https://python.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 
@@ -39,19 +39,41 @@ We operate on a **"Don't Trust, Verify"** basis. This tool is designed for priva
 
 ---
 
-## 🚀 Installation & Setup
+## 🚀 Quick Start Guide
 
-### 1. Install Python Dependencies
+Go from zero to alpha in 4 simple steps.
 
-```bash
-# Create virtual environment
-python -m venv venv
+### 1. Configure ⚙️
+Rename `.env.example` to `.env` and add your details.
+* **Discord:** Add your `DISCORD_EMAIL` and `DISCORD_PASSWORD`.
+* **Targets:** Open `config.json` and paste the links to the raffle channels you want to farm.
 
-# On Windows:
-venv\Scripts\activate
+### 2. Install 📦
+We've included a one-click setup script.
+* **Windows:** Double-click `setup_windows.bat`.
+* **Manual:** Run `pip install -r requirements.txt` and `playwright install chromium`.
 
-# On Mac/Linux:
-source venv/bin/activate
+### 3. Connect Telegram (Optional) 📱
+Want to control the bot from your phone?
+* Create a bot via **@BotFather** and get the Token.
+* Get your ID via **@userinfobot**.
+* Paste them into your `.env` file.
 
-# Install requirements
-pip install -r requirements.txt
+### 4. Launch & Hunt 🟢
+Start the engine.
+* **Run:** `start_telegram_bot.bat` (or `python telegram_runner.py`).
+* **Command:** Open Telegram and send `/start`.
+* **Result:** The bot will open the browser, login, and start scanning for "Enter Raffle" buttons.
+
+---
+
+## ⚠️ Important Notes
+
+> **First Run:** The bot uses a dedicated Chromium profile. If you need to log in or solve a Captcha, do it manually in the opened window. The bot will wait.
+
+> **Troubleshooting:** If the bot says "Could not find server", ensure the server name in `config.json` matches exactly how it appears in your Discord sidebar.
+
+---
+
+### Disclaimer
+*This tool is for educational purposes only. Use responsibly. The authors are not responsible for any account limitations resulting from misuse.*
