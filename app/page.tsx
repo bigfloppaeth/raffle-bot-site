@@ -37,7 +37,7 @@ export default function Home() {
 
         <div className="inline-block px-3 py-1 mb-6 border border-gray-700 rounded-full bg-gray-900/50 backdrop-blur">
           <span className="text-neon text-xs font-mono font-bold tracking-widest uppercase">
-            v2.0 Now with Telegram Control
+            Now with Profit Tracking &amp; Mint Alerts
           </span>
         </div>
 
@@ -50,9 +50,10 @@ export default function Home() {
         </h1>
 
         <p className="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
-          A stealthy, Playwright-based automation tool by <span className="text-white font-semibold">BigFloppa</span>{" "}
-          that scans, scrolls, and enters Discord raffles while you sleep.{" "}
-          <span className="text-white font-semibold">100% Local.</span>
+          The stealthy, Playwright-based tool by{" "}
+          <span className="text-white font-semibold">BigFloppa</span> that farms raffles and{" "}
+          <span className="text-white font-semibold">tracks your wins automatically</span>. Local
+          only. Zero API bans.
         </p>
 
         <div className="flex flex-col md:flex-row gap-4 justify-center items-center">
@@ -60,13 +61,13 @@ export default function Home() {
             href="#wizard"
             className="px-8 py-4 bg-neon text-black font-bold text-lg rounded hover:bg-white hover:scale-105 transition transform shadow-[0_0_20px_rgba(16,185,129,0.4)]"
           >
-            Deploy Bot
+            Get Started
           </a>
           <a
-            href="#guide"
+            href="#features"
             className="px-8 py-4 border border-gray-700 text-gray-300 font-mono text-sm rounded hover:border-gray-500 transition"
           >
-            View Documentation
+            View Features
           </a>
         </div>
 
@@ -79,20 +80,20 @@ export default function Home() {
           <div className="space-y-1 text-gray-300">
             <p className="text-gray-500"># Initializing stealth browser context...</p>
             <p>
-              &gt; <span className="text-blue-400">Playwright</span> connected. Fingerprint:{" "}
-              <span className="text-yellow-300">Unique</span>
+              &gt; Target: <span className="text-discord">AlphaLab - giveaways</span>
             </p>
-            <p>
-              &gt; Target: <span className="text-discord">Mintify - new-raffles</span>
-            </p>
-            <p>
-              &gt; Scrolling to bottom... <span className="text-green-500">Done.</span>
-            </p>
-            <p>&gt; Scanning upwards for "Enter Raffle"...</p>
-            <p>&gt; Found Raffle: "Azuki Elementals WL"</p>
-            <p>&gt; Simulating human mouse movement...</p>
             <p>
               &gt; <span className="text-neon">SUCCESS: Raffle Entered.</span> (Delay: 7.2s)
+            </p>
+            <p className="text-blue-400 mt-2">&gt; /wins</p>
+            <p>
+              &gt; <span className="text-white font-bold">🎉 RECENT WINS DETECTED:</span>
+            </p>
+            <p className="pl-4 text-green-400">- Azuki Elementals (Ends in 2h)</p>
+            <p className="pl-4 text-green-400">- DeGods S3 Allowlist (Minting NOW)</p>
+            <p>
+              &gt; Exporting <span className="text-purple-300">win_history.xlsx</span>...{" "}
+              <span className="text-gray-500">Done.</span>
             </p>
             <p className="typing-effect text-gray-400">_</p>
           </div>
@@ -102,39 +103,57 @@ export default function Home() {
 
       <section id="features" className="py-20 bg-black/50 border-y border-gray-900">
         <div className="container mx-auto px-6">
-          <h2 className="text-3xl font-bold mb-16 text-center">Why Smart Users Use This</h2>
+          <h2 className="text-3xl font-bold mb-16 text-center">Full-Stack Alpha Tool</h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="p-8 border border-gray-800 rounded-xl bg-gray-900/30 hover:border-neon/50 transition duration-300 group">
-              <div className="w-12 h-12 bg-gray-800 rounded-lg flex items-center justify-center mb-6 text-2xl group-hover:text-neon transition">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="p-6 border border-gray-800 rounded-xl bg-gray-900/30 hover:border-neon/50 transition duration-300 group">
+              <div className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center mb-4 text-xl group-hover:text-neon transition">
                 🤖
               </div>
-              <h3 className="text-xl font-bold mb-3 text-white">Real Browser Engine</h3>
-              <p className="text-gray-400 text-sm leading-relaxed">
-                This runs a real Chromium instance via Playwright. Discord sees a human session, not
-                an API spammer.
+              <h3 className="text-lg font-bold mb-2 text-white">Ghost Mode</h3>
+              <p className="text-gray-400 text-xs leading-relaxed">
+                Real Chromium instance with randomized human delays. 100% Undetectable.
               </p>
             </div>
 
-            <div className="p-8 border border-gray-800 rounded-xl bg-gray-900/30 hover:border-purple-500/50 transition duration-300 group">
-              <div className="w-12 h-12 bg-gray-800 rounded-lg flex items-center justify-center mb-6 text-2xl group-hover:text-purple-400 transition">
-                👻
-              </div>
-              <h3 className="text-xl font-bold mb-3 text-white">Ghost Mode</h3>
-              <p className="text-gray-400 text-sm leading-relaxed">
-                Randomized delays, natural mouse movement, and fewer “bot-like” signals. Built for
-                consistency, not speed-running.
-              </p>
-            </div>
-
-            <div className="p-8 border border-gray-800 rounded-xl bg-gray-900/30 hover:border-blue-500/50 transition duration-300 group">
-              <div className="w-12 h-12 bg-gray-800 rounded-lg flex items-center justify-center mb-6 text-2xl group-hover:text-blue-400 transition">
+            <div className="p-6 border border-gray-800 rounded-xl bg-gray-900/30 hover:border-blue-500/50 transition duration-300 group">
+              <div className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center mb-4 text-xl group-hover:text-blue-400 transition">
                 🧠
               </div>
-              <h3 className="text-xl font-bold mb-3 text-white">Smart Scanning</h3>
-              <p className="text-gray-400 text-sm leading-relaxed">
-                Jumps to newest messages and scans upwards. Stops when it reaches ended raffles so
-                it doesn’t waste time.
+              <h3 className="text-lg font-bold mb-2 text-white">Smart Scanning</h3>
+              <p className="text-gray-400 text-xs leading-relaxed">
+                Skips dead raffles. Jumps to new messages. Optimized for speed and safety.
+              </p>
+            </div>
+
+            <div className="p-6 border border-gray-800 rounded-xl bg-gray-900/30 hover:border-purple-500/50 transition duration-300 group relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-16 h-16 bg-purple-500/10 blur-xl rounded-full" />
+              <div className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center mb-4 text-xl group-hover:text-purple-400 transition">
+                📊
+              </div>
+              <h3 className="text-lg font-bold mb-2 text-white">Auto-Ledger</h3>
+              <p className="text-gray-400 text-xs leading-relaxed">
+                Use{" "}
+                <code className="text-purple-400 bg-purple-900/30 px-1 rounded">
+                  /wins
+                </code>{" "}
+                to list recent wins and{" "}
+                <code className="text-purple-400 bg-purple-900/30 px-1 rounded">
+                  /winsexcel
+                </code>{" "}
+                to get a detailed <b>Excel (.xlsx)</b> file of all your winnings.
+              </p>
+            </div>
+
+            <div className="p-6 border border-gray-800 rounded-xl bg-gray-900/30 hover:border-yellow-500/50 transition duration-300 group relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-16 h-16 bg-yellow-500/10 blur-xl rounded-full" />
+              <div className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center mb-4 text-xl group-hover:text-yellow-400 transition">
+                🚨
+              </div>
+              <h3 className="text-lg font-bold mb-2 text-white">Mint Radar</h3>
+              <p className="text-gray-400 text-xs leading-relaxed">
+                Never miss a mint. <span className="font-mono">/notis</span> and startup alerts warn
+                you about mints within 2 days, so you don&apos;t lose the allocation.
               </p>
             </div>
           </div>
@@ -227,6 +246,86 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Command Center – secondary block, image left / text right */}
+      <section className="py-24 container mx-auto px-6">
+        <div className="flex flex-col lg:flex-row items-center gap-16">
+          <div className="lg:w-1/2 relative order-2 lg:order-1">
+            <div className="bg-gray-800 p-4 rounded-[2.5rem] w-full max-w-sm mx-auto border-[6px] border-gray-700 shadow-2xl">
+              <div className="bg-[#0e1621] rounded-[2rem] h-[450px] p-4 flex flex-col font-sans overflow-hidden relative">
+                <div className="absolute top-0 left-0 w-full h-16 bg-[#182533] z-10 flex items-center px-6 gap-3">
+                  <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-bold">
+                    RB
+                  </div>
+                  <div>
+                    <p className="text-white text-sm font-bold">Raffle Bot</p>
+                    <p className="text-blue-400 text-xs">bot</p>
+                  </div>
+                </div>
+
+                <div className="mt-16 flex flex-col gap-3 overflow-hidden">
+                  <div className="self-end bg-[#2b5278] px-4 py-2 rounded-2xl rounded-tr-sm max-w-[80%]">
+                    <p className="text-white text-sm">/wins</p>
+                  </div>
+
+                  <div className="self-start bg-[#182533] px-4 py-3 rounded-2xl rounded-tl-sm max-w-[90%]">
+                    <p className="text-xs text-gray-400 mb-1">Raffle Bot • Smart Scanner</p>
+                    <p className="text-sm text-white">
+                      🎉 Recent Wins Found
+                      <br />
+                      <span className="text-green-400">Azuki Elements WL — WON</span>
+                      <br />
+                      <span className="text-yellow-300">Ether Orcs WL — MINTING</span>
+                    </p>
+                  </div>
+
+                  <div className="self-start bg-[#182533] px-4 py-3 rounded-2xl rounded-tl-sm max-w-[90%]">
+                    <p className="text-xs text-white/60 mb-1">XLS Export</p>
+                    <p className="text-xs text-green-300 font-mono">win_history.xlsx • 12kb</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="lg:w-1/2 order-1 lg:order-2">
+            <div className="inline-block text-accent font-mono text-sm mb-4">COMMAND CENTER</div>
+            <h2 className="text-4xl font-bold mb-6">Your Pocket Alpha Caller</h2>
+            <p className="text-gray-400 mb-8 text-lg">
+              Instantly list active wins, export Excel, or see mint alerts – all from Telegram while
+              you&apos;re AFK.
+            </p>
+
+            <div className="space-y-6">
+              <div className="flex gap-4">
+                <div className="w-12 h-12 rounded-full bg-gray-800 flex items-center justify-center text-neon font-bold">
+                  /
+                </div>
+                <div>
+                  <h4 className="text-white font-bold">New: /wins + /winsexcel</h4>
+                  <p className="text-gray-400 text-sm">
+                    Use <span className="font-mono text-white">/wins</span> to view your latest
+                    Alphabot wins, or <span className="font-mono text-white">/winsexcel</span> to
+                    pull a full Excel ledger.
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-4">
+                <div className="w-12 h-12 rounded-full bg-gray-800 flex items-center justify-center text-yellow-500 font-bold">
+                  !
+                </div>
+                <div>
+                  <h4 className="text-white font-bold">Smart Notifications</h4>
+                  <p className="text-gray-400 text-sm">
+                    <span className="font-mono text-white">/notis</span> and startup alerts ping you
+                    when mints are close, so you don&apos;t miss your allocation.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section id="guide" className="py-20 bg-black/50 border-y border-gray-900">
         <div className="container mx-auto px-6">
           <h2 className="text-3xl font-bold mb-4 text-center">Quick Guide</h2>
@@ -277,7 +376,30 @@ export default function Home() {
                   Start <span className="font-mono text-white">start_telegram_bot.bat</span> and use{" "}
                   <span className="font-mono text-white">/start</span>,{" "}
                   <span className="font-mono text-white">/stop_bot</span>,{" "}
-                  <span className="font-mono text-white">/stats</span>.
+                  <span className="font-mono text-white">/stats</span>,{" "}
+                  <span className="font-mono text-white">/wins</span>,{" "}
+                  <span className="font-mono text-white">/winsexcel</span>,{" "}
+                  <span className="font-mono text-white">/notis</span>.
+                </p>
+              </div>
+            </div>
+            <div
+              id="ab-token-guide"
+              className="flex gap-4 p-6 bg-black rounded-lg border border-gray-800 md:col-span-2"
+            >
+              <div className="text-neon text-xl">5</div>
+              <div>
+                <h4 className="font-bold text-white mb-2">Add Alphabot token (optional)</h4>
+                <p className="text-sm text-gray-400">
+                  In your browser, open Alphabot and log in. Then open DevTools →{" "}
+                  <span className="font-mono text-white">Application</span> →{" "}
+                  <span className="font-mono text-white">Cookies</span> and copy the value of{" "}
+                  <span className="font-mono text-white">__Secure-next-auth.session-token</span> into{" "}
+                  <span className="font-mono text-white">ALPHABOT_SESSION_TOKEN</span> in{" "}
+                  <span className="font-mono text-white">.env</span>. This unlocks{" "}
+                  <span className="font-mono text-white">/wins</span>,{" "}
+                  <span className="font-mono text-white">/winsexcel</span>, and{" "}
+                  <span className="font-mono text-white">/notis</span>.
                 </p>
               </div>
             </div>

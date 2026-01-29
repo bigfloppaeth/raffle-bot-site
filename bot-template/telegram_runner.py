@@ -1,24 +1,13 @@
-"""Simple Telegram bot to start/stop the Discord raffle bot remotely.
+"""Telegram controller for the Discord raffle bot.
 
-Usage:
-    1. Install dependencies:
-         pip install -r requirements.txt
-
-    2. Set environment variables (for security, do this in your shell or .env):
-         TELEGRAM_BOT_TOKEN=123456:ABC...
-         TELEGRAM_ALLOWED_USER_ID=123456789   # your Telegram numeric user ID
-
-    3. Start the Telegram control bot (inside your venv, from project root):
-         python telegram_runner.py
-
-    4. In Telegram, send these commands to your bot:
-         /start_bot  - start the Discord raffle bot (python -m src.main)
-         /stop_bot   - stop it, if it's running
-         /status     - show whether it's running
-         /stats      - show last run statistics
-
-This script only controls a separate process running src.main. It does NOT
-change the internals of the Discord raffle bot itself.
+Features:
+- /start or /start_bot: launch the raffle runner
+- /stop_bot: stop the raffle runner
+- /status, /stats: basic run status
+- Optional Alphabot integration (if ALPHABOT_SESSION_TOKEN is set in .env):
+  - /wins: show recent wins as text
+  - /winsexcel: export wins to an Excel (.xlsx) file
+  - /notis: show closest upcoming mint within 2 days
 """
 
 import asyncio
@@ -26,12 +15,16 @@ import json
 import os
 import subprocess
 import sys
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Iterable, Optional
 
 from dotenv import load_dotenv
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes
+
+from alphabot_wins import export_wins_xlsx, fetch_wins_rows
+
 
 RAFFLE_PROCESS: Optional[subprocess.Popen] = None
 
@@ -116,6 +109,62 @@ def _format_stats_message(stats: Dict[str, Any]) -> str:
                 lines.append(f"  - {name}: {clicked} raffle(s) entered")
 
     return "\n".join(lines)
+
+
+def _format_win_line(row, now: datetime) -> str:
+    """Format a single win for /wins output."""
+    picked = getattr(row, "picked_dt", None) or now
+    delta = now - picked
+    days = max(0, int(delta.total_seconds() // 86400))
+    if days <= 0:
+        won_str = "today"
+    elif days == 1:
+        won_str = "1 day ago"
+    else:
+        won_str = f"{days} days ago"
+
+    mint_dt = getattr(row, "mint_dt", None)
+    if mint_dt is not None:
+        mint_str = mint_dt.astimezone(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+    else:
+        mint_str = "unknown date"
+
+    project = getattr(row, "project", "Unknown")
+    return f"{project}, won {won_str}, minting {mint_str}"
+
+
+def _format_closest_mint_message(rows: Iterable[Any]) -> Optional[str]:
+    """Find the closest upcoming mint within the next 2 days."""
+    now = datetime.now(timezone.utc)
+    max_dt = now + timedelta(days=2)
+
+    candidates = [
+        r
+        for r in rows
+        if getattr(r, "mint_dt", None) is not None and now <= getattr(r, "mint_dt") <= max_dt
+    ]
+    if not candidates:
+        return None
+
+    closest = min(candidates, key=lambda r: getattr(r, "mint_dt"))
+    mint_dt = closest.mint_dt.astimezone(timezone.utc)  # type: ignore[union-attr]
+    delta = mint_dt - now
+    days = delta.days
+
+    if days <= 0:
+        when_str = "later today"
+    elif days == 1:
+        when_str = "in ~1 day"
+    else:
+        when_str = f"in ~{days} days"
+
+    mint_str = mint_dt.strftime("%Y-%m-%d %H:%M UTC")
+    project = getattr(closest, "project", "Unknown")
+    return (
+        "📅 Closest mint (within 2 days):\n"
+        f"- {project}\n"
+        f"- Minting {mint_str} ({when_str})"
+    )
 
 
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -211,6 +260,155 @@ async def stats_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
     await update.message.reply_text(message, parse_mode="Markdown")
 
 
+async def commands_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """/commands - list all available bot commands."""
+    if not _is_authorized(update):
+        await update.message.reply_text("You are not allowed to control this bot.")
+        return
+
+    has_alpha = bool(os.getenv("ALPHABOT_SESSION_TOKEN", "").strip())
+
+    lines = [
+        "*Available commands:*",
+        "",
+        "/start - start the raffle bot (alias for /start_bot)",
+        "/start_bot - launch the raffle runner",
+        "/stop_bot - stop the raffle runner if it is running",
+        "/status - show whether the raffle runner is running",
+        "/stats - show last run statistics",
+    ]
+
+    if has_alpha:
+        lines.extend(
+            [
+                "",
+                "/wins - list recent Alphabot wins as text",
+                "/winsexcel - export wins to an Excel (.xlsx) file",
+                "/notis - show the closest upcoming mint within 2 days",
+            ]
+        )
+    else:
+        lines.extend(
+            [
+                "",
+                "_Tip: set ALPHABOT_SESSION_TOKEN in .env to enable /wins, /winsexcel and /notis._",
+            ]
+        )
+
+    await update.message.reply_text("\n".join(lines), parse_mode="Markdown")
+
+
+async def wins_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """/wins - show recent Alphabot wins as text (requires ALPHABOT_SESSION_TOKEN)."""
+    if not _is_authorized(update):
+        await update.message.reply_text("You are not allowed to control this bot.")
+        return
+
+    session_token = os.getenv("ALPHABOT_SESSION_TOKEN", "").strip()
+    if not session_token:
+        await update.message.reply_text(
+            "ALPHABOT_SESSION_TOKEN is not set.\n\n"
+            "If you want /wins to work, open alphabot in your browser → DevTools → "
+            "Application → Cookies → __Secure-next-auth.session-token → copy Value into .env "
+            "as ALPHABOT_SESSION_TOKEN."
+        )
+        return
+
+    await update.message.reply_text("Fetching latest Alphabot wins…")
+
+    try:
+        rows = await fetch_wins_rows(session_token=session_token)
+    except Exception as e:
+        await update.message.reply_text(f"Failed to fetch wins: {e}")
+        return
+
+    if not rows:
+        await update.message.reply_text("No recent wins were found.")
+        return
+
+    now = datetime.now(timezone.utc)
+    rows_sorted = sorted(
+        rows,
+        key=lambda r: getattr(r, "picked_dt", getattr(r, "mint_dt", now)) or now,
+        reverse=True,
+    )
+
+    top_rows = rows_sorted[:15]
+    lines = [_format_win_line(r, now) for r in top_rows]
+    msg = "Latest wins (up to 15):\n" + "\n".join(f"- {line}" for line in lines)
+    await update.message.reply_text(msg)
+
+
+async def winsexcel_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """/winsexcel - export Alphabot wins to an XLSX and send it here (requires ALPHABOT_SESSION_TOKEN)."""
+    if not _is_authorized(update):
+        await update.message.reply_text("You are not allowed to control this bot.")
+        return
+
+    session_token = os.getenv("ALPHABOT_SESSION_TOKEN", "").strip()
+    if not session_token:
+        await update.message.reply_text(
+            "ALPHABOT_SESSION_TOKEN is not set.\n\n"
+            "Open alphabot in your browser → DevTools → Application → Cookies → "
+            "__Secure-next-auth.session-token → copy Value into .env as ALPHABOT_SESSION_TOKEN."
+        )
+        return
+
+    out_path = str(Path(__file__).resolve().parent / "won_raffles.xlsx")
+
+    await update.message.reply_text("Checking Alphabot wins… generating Excel file (this can take ~10–60s).")
+
+    try:
+        file_path, count = await export_wins_xlsx(
+            session_token=session_token,
+            out_path=out_path,
+        )
+    except Exception as e:
+        await update.message.reply_text(f"Failed to export wins: {e}")
+        return
+
+    try:
+        await update.message.reply_document(
+            document=open(file_path, "rb"),
+            filename="won_raffles.xlsx",
+            caption=f"✅ Wins exported. Rows in file: {count}\n\n"
+            f"(Projects with mint date older than 7 days are removed automatically.)",
+        )
+    except Exception as e:
+        await update.message.reply_text(f"Exported but could not send file: {e}\nSaved at: {file_path}")
+
+
+async def notis_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """/notis - show the closest upcoming mint within 2 days (requires ALPHABOT_SESSION_TOKEN)."""
+    if not _is_authorized(update):
+        await update.message.reply_text("You are not allowed to control this bot.")
+        return
+
+    session_token = os.getenv("ALPHABOT_SESSION_TOKEN", "").strip()
+    if not session_token:
+        await update.message.reply_text(
+            "ALPHABOT_SESSION_TOKEN is not set.\n\n"
+            "Open alphabot in your browser → DevTools → Application → Cookies → "
+            "__Secure-next-auth.session-token → copy Value into .env as ALPHABOT_SESSION_TOKEN."
+        )
+        return
+
+    await update.message.reply_text("Checking upcoming mints…")
+
+    try:
+        rows = await fetch_wins_rows(session_token=session_token)
+    except Exception as e:
+        await update.message.reply_text(f"Failed to fetch wins for notifications: {e}")
+        return
+
+    msg = _format_closest_mint_message(rows)
+    if not msg:
+        await update.message.reply_text("No mints found within the next 2 days.")
+        return
+
+    await update.message.reply_text(msg)
+
+
 async def _notify_when_raffle_finishes(chat_id: int, app: "Application") -> None:
     """Wait for raffle process to finish, then send summary into the same chat."""
     global RAFFLE_PROCESS
@@ -234,6 +432,34 @@ async def _notify_when_raffle_finishes(chat_id: int, app: "Application") -> None
         )
 
 
+async def _startup_notis_post_init(app: "Application") -> None:
+    """
+    Optional hook: after startup, send a closest-mint notification once
+    if Alphabot token + TELEGRAM_ALLOWED_USER_ID are configured.
+    """
+    session_token = os.getenv("ALPHABOT_SESSION_TOKEN", "").strip()
+    allowed_id_str = os.getenv("TELEGRAM_ALLOWED_USER_ID", "").strip()
+
+    if not session_token or not allowed_id_str:
+        return
+
+    try:
+        chat_id = int(allowed_id_str)
+    except ValueError:
+        return
+
+    try:
+        rows = await fetch_wins_rows(session_token=session_token)
+    except Exception:
+        return
+
+    msg = _format_closest_mint_message(rows)
+    if not msg:
+        msg = "No mints found within the next 2 days (startup check)."
+
+    await app.bot.send_message(chat_id=chat_id, text=msg)
+
+
 def main() -> None:
     project_root = Path(__file__).resolve().parent
     env_path = project_root / ".env"
@@ -246,11 +472,17 @@ def main() -> None:
         return
 
     app = Application.builder().token(token).build()
+    app.post_init = _startup_notis_post_init  # type: ignore[assignment]
+
     app.add_handler(CommandHandler("start", start_command))
     app.add_handler(CommandHandler("start_bot", start_bot_command))
     app.add_handler(CommandHandler("stop_bot", stop_bot_command))
     app.add_handler(CommandHandler("status", status_command))
     app.add_handler(CommandHandler("stats", stats_command))
+    app.add_handler(CommandHandler("wins", wins_command))
+    app.add_handler(CommandHandler("winsexcel", winsexcel_command))
+    app.add_handler(CommandHandler("notis", notis_command))
+    app.add_handler(CommandHandler("commands", commands_command))
 
     print("Telegram control bot is running. Press Ctrl+C to stop.")
     app.run_polling()

@@ -8,6 +8,7 @@ type WizardState = {
   projectFolderName: string;
   telegramBotToken: string;
   telegramAllowedUserId: string;
+  alphabotSessionToken: string;
   discordChannelLinks: string;
   includeWindowsSetup: boolean;
   turnstileToken: string;
@@ -19,6 +20,7 @@ export function SetupWizard() {
     projectFolderName: "discord-raffle-bot",
     telegramBotToken: "",
     telegramAllowedUserId: "",
+    alphabotSessionToken: "",
     discordChannelLinks: "",
     includeWindowsSetup: true,
     turnstileToken: "",
@@ -81,9 +83,13 @@ export function SetupWizard() {
 
       <h2 className="text-2xl font-bold text-white mb-2">Generate your ready-to-run bot folder</h2>
       <p className="text-gray-400 text-sm mb-8">
-        Fill what you want, download a zip, and run it locally. Telegram fields are optional (you
-        can fill them later in{" "}
+        Fill what you want, download a zip, and run it locally. Telegram and Alphabot fields are
+        optional (you can fill them later in{" "}
         <code className="bg-black px-1 py-0.5 rounded text-neon font-mono text-xs">.env</code>).
+        If you add your Alphabot token, <span className="text-white">/wins</span>,{" "}
+        <span className="text-white">/winsexcel</span>, and{" "}
+        <span className="text-white">/notis</span> will work out of the box. To see all features,
+        send <span className="text-white font-mono text-xs">/commands</span> to your Telegram bot.
       </p>
 
       <div className="mb-6">
@@ -164,6 +170,29 @@ export function SetupWizard() {
         <p className="text-xs text-gray-500 mt-2">
           If you don't want to share it with the site, leave it blank and fill it yourself in .env
           after download.
+        </p>
+      </div>
+
+      <div className="mb-6">
+        <label className="block text-xs font-mono text-gray-400 uppercase tracking-wider mb-2">
+          Alphabot Session Token <span className="text-gray-600">(Optional)</span>
+        </label>
+        <input
+          type="text"
+          value={state.alphabotSessionToken}
+          onChange={(e) => setState((s) => ({ ...s, alphabotSessionToken: e.target.value }))}
+          className="w-full bg-black/40 border border-gray-700 text-white p-3 rounded-lg focus:outline-none focus:border-neon focus:ring-1 focus:ring-neon transition font-mono placeholder-gray-600"
+          placeholder="__Secure-next-auth.session-token value"
+        />
+        <p className="text-xs text-gray-500 mt-2">
+          This enables <span className="text-white font-mono text-xs">/wins</span>,{" "}
+          <span className="text-white font-mono text-xs">/winsexcel</span>, and{" "}
+          <span className="text-white font-mono text-xs">/notis</span> in Telegram. To learn how to
+          get your Alphabot token, click{" "}
+          <a href="#ab-token-guide" className="text-neon font-mono underline">
+            here
+          </a>
+          .
         </p>
       </div>
 

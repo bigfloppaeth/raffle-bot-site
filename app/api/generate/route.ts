@@ -6,6 +6,7 @@ import path from "node:path";
 type GenerateRequest = {
   telegramBotToken?: string;
   telegramAllowedUserId?: string;
+  alphabotSessionToken?: string;
   discordChannelLinks: string; // newline-separated
   projectFolderName?: string;
   includeWindowsSetup?: boolean;
@@ -59,9 +60,11 @@ function makeEnv(req: GenerateRequest) {
   let out = tpl.trimEnd();
   const token = req.telegramBotToken?.trim();
   const allowed = req.telegramAllowedUserId?.trim();
+  const alphabot = req.alphabotSessionToken?.trim();
 
   if (token) out = upsertEnvVar(out, "TELEGRAM_BOT_TOKEN", token);
   if (allowed) out = upsertEnvVar(out, "TELEGRAM_ALLOWED_USER_ID", allowed);
+  if (alphabot) out = upsertEnvVar(out, "ALPHABOT_SESSION_TOKEN", alphabot);
 
   return (out + "\n").replace(/\n{3,}/g, "\n\n");
 }
