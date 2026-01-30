@@ -14,12 +14,6 @@ export default function Home() {
           <a href="#wizard" className="hover:text-neon transition">
             DOWNLOAD
           </a>
-          <a href="#security" className="hover:text-neon transition">
-            SECURITY
-          </a>
-          <a href="#telegram" className="hover:text-neon transition">
-            TELEGRAM
-          </a>
           <a href="#guide" className="hover:text-neon transition">
             GUIDE
           </a>
@@ -28,7 +22,7 @@ export default function Home() {
           href="https://github.com/bigfloppaeth/raffle-bot-site"
           className="bg-white text-black px-5 py-2 rounded font-bold hover:bg-neon hover:text-white transition duration-300"
         >
-          GET ACCESS
+          SEE IN GITHUB
         </a>
       </nav>
 

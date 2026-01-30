@@ -269,13 +269,15 @@ async def commands_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -
     has_alpha = bool(os.getenv("ALPHABOT_SESSION_TOKEN", "").strip())
 
     lines = [
-        "*Available commands:*",
+        "<b>Available commands:</b>",
         "",
         "/start - start the raffle bot (alias for /start_bot)",
         "/start_bot - launch the raffle runner",
         "/stop_bot - stop the raffle runner if it is running",
         "/status - show whether the raffle runner is running",
         "/stats - show last run statistics",
+        "/commands - list all commands (this message)",
+        "/faq - answers to the most common questions",
     ]
 
     if has_alpha:
@@ -291,11 +293,48 @@ async def commands_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -
         lines.extend(
             [
                 "",
-                "_Tip: set ALPHABOT_SESSION_TOKEN in .env to enable /wins, /winsexcel and /notis._",
+                "<i>Tip: set ALPHABOT_SESSION_TOKEN in .env to enable /wins, /winsexcel and /notis.</i>",
             ]
         )
 
-    await update.message.reply_text("\n".join(lines), parse_mode="Markdown")
+    await update.message.reply_text("\n".join(lines), parse_mode="HTML")
+
+
+FAQ_TEXT_EN = """
+<b>FAQ — Frequently Asked Questions</b>
+
+<b>1. How to get and run the bot</b>
+
+<b>From the website (recommended):</b> Go to <a href="https://raffle-bot-site.vercel.app/">raffle-bot-site.vercel.app</a> → fill the wizard (Discord channel links, optionally Telegram/AlphaBot) → solve CAPTCHA → download the zip → unzip. Then: <b>Windows</b> — run <code>setup_windows.bat</code> if included (creates venv, installs deps, Playwright), or manually: <code>python -m venv venv</code>, <code>venv\\Scripts\\activate</code>, <code>pip install -r requirements.txt</code>, <code>playwright install chromium</code>. Create <code>.env</code> with your tokens (see FAQ 2–3). Run <code>start_telegram_bot.bat</code> or <code>python telegram_runner.py</code> → send /start in Telegram. <b>macOS/Linux</b> — same idea: <code>python3 -m venv venv</code>, <code>source venv/bin/activate</code>, <code>pip install -r requirements.txt</code>, <code>playwright install chromium</code>, then <code>python telegram_runner.py</code>.
+
+<b>From Python/source:</b> Clone or download the repo → open terminal in the project folder. <b>Windows:</b> <code>python -m venv venv</code>, <code>venv\\Scripts\\activate</code>, <code>pip install -r requirements.txt</code>, create <code>.env</code>, run <code>python telegram_runner.py</code> or <code>python -m src.main</code>. <b>macOS/Linux:</b> <code>python3 -m venv venv</code>, <code>source venv/bin/activate</code>, <code>pip install -r requirements.txt</code>, then same.
+
+<b>2. How to get your AlphaBot session token</b>
+
+Log in to AlphaBot in your browser → press F12 (DevTools) → Application tab → Cookies → select the AlphaBot site → find <code>__Secure-next-auth.session-token</code> → copy its Value → paste into <code>.env</code> as <code>ALPHABOT_SESSION_TOKEN=...</code>.
+
+*3. How to get your Telegram ID and the bot’s Telegram ID*
+
+• <b>Your Telegram user ID:</b> Send any message to @userinfobot or @getidsbot; they reply with your numeric user ID. Put it in <code>.env</code> as <code>TELEGRAM_ALLOWED_USER_ID=123456789</code>.
+• <b>Bot token (from BotFather):</b> Create a bot via @BotFather, then use the token he gives you as <code>TELEGRAM_BOT_TOKEN</code> in <code>.env</code>. The “bot ID” in the usual sense is that token; there is no separate numeric “bot user ID” you need for this setup.
+
+<b>4. How to get a Discord channel link</b>
+
+In Discord (app or web): open the server → go to the channel → right‑click the channel name in the list → “Copy channel link” (or “Copy Link”). The link looks like: <code>https://discord.com/channels/SERVER_ID/CHANNEL_ID</code>. Put this URL into your `config.json` under the channel’s `url` field.
+
+<b>5. More questions?</b>
+
+Contact the creator on X: https://x.com/BigFloppaEth
+"""
+
+
+async def faq_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """/faq - show answers to the most common questions (in English)."""
+    if not _is_authorized(update):
+        await update.message.reply_text("You are not allowed to control this bot.")
+        return
+
+    await update.message.reply_text(FAQ_TEXT_EN.strip(), parse_mode="HTML")
 
 
 async def wins_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -483,6 +522,7 @@ def main() -> None:
     app.add_handler(CommandHandler("winsexcel", winsexcel_command))
     app.add_handler(CommandHandler("notis", notis_command))
     app.add_handler(CommandHandler("commands", commands_command))
+    app.add_handler(CommandHandler("faq", faq_command))
 
     print("Telegram control bot is running. Press Ctrl+C to stop.")
     app.run_polling()
