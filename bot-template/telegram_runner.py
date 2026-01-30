@@ -15,6 +15,7 @@ import json
 import os
 import subprocess
 import sys
+import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Dict, Iterable, Optional
@@ -75,7 +76,10 @@ def _load_stats() -> Optional[Dict[str, Any]]:
 
 
 def _format_stats_message(stats: Dict[str, Any]) -> str:
-    """Format a human-readable Telegram message from the stats structure."""
+    """Format a human-readable Telegram message from the stats structure (HTML)."""
+    def _esc(s: str) -> str:
+        return str(s).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
     total_channels = stats.get("total_channels", 0)
     channels_processed = stats.get("channels_processed", 0)
     channels_with_raffles = stats.get("channels_with_raffles", 0)
@@ -85,7 +89,7 @@ def _format_stats_message(stats: Dict[str, Any]) -> str:
     finished_at = stats.get("finished_at_utc", "n/a")
 
     lines = []
-    lines.append("📊 *Discord raffle stats (last run)*")
+    lines.append("📊 <b>Discord raffle stats (last run)</b>")
     lines.append("")
     lines.append(f"• Total channels in config: {total_channels}")
     lines.append(f"• Channels processed: {channels_processed}")
@@ -98,9 +102,9 @@ def _format_stats_message(stats: Dict[str, Any]) -> str:
     channels = stats.get("channels") or []
     if channels:
         lines.append("")
-        lines.append("*Per-channel breakdown:*")
+        lines.append("<b>Per-channel breakdown:</b>")
         for ch in channels:
-            name = ch.get("name", "Unknown")
+            name = _esc(ch.get("name", "Unknown"))
             clicked = ch.get("clicked", 0)
             reason = ch.get("reason", "processed")
             if reason == "no_url":
@@ -257,7 +261,7 @@ async def stats_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
         return
 
     message = _format_stats_message(stats)
-    await update.message.reply_text(message, parse_mode="Markdown")
+    await update.message.reply_text(message, parse_mode="HTML")
 
 
 async def commands_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -449,26 +453,54 @@ async def notis_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
 
 
 async def _notify_when_raffle_finishes(chat_id: int, app: "Application") -> None:
-    """Wait for raffle process to finish, then send summary into the same chat."""
+    """
+    Send stats as soon as the raffle run finishes (stats file updated), not when
+    the user stops the bot. Polls the stats file; when it is modified after we
+    started, send the message. Also send on process exit if we haven't sent yet.
+    """
     global RAFFLE_PROCESS
+
+    start_time = time.time()
+    stats_file = _get_stats_file_path()
+    already_sent = False
 
     while True:
         proc = RAFFLE_PROCESS
         if not proc:
             break
         if proc.poll() is not None:
+            if not already_sent:
+                stats = _load_stats()
+                if stats:
+                    message = "✅ Successfully registered raffles.\n\n" + _format_stats_message(stats)
+                    await app.bot.send_message(chat_id=chat_id, text=message, parse_mode="HTML")
+                else:
+                    await app.bot.send_message(
+                        chat_id=chat_id,
+                        text="✅ Discord raffle bot finished.\n\n(No statistics file was found.)",
+                    )
             break
-        await asyncio.sleep(5)
 
-    stats = _load_stats()
-    if stats:
-        message = "✅ Successfully registered raffles.\n\n" + _format_stats_message(stats)
-        await app.bot.send_message(chat_id=chat_id, text=message, parse_mode="Markdown")
-    else:
-        await app.bot.send_message(
-            chat_id=chat_id,
-            text="✅ Discord raffle bot finished.\n\n(No statistics file was found.)",
-        )
+        if not already_sent and stats_file.is_file():
+            try:
+                mtime = stats_file.stat().st_mtime
+                if mtime >= start_time:
+                    await asyncio.sleep(1)
+                    stats = _load_stats()
+                    if stats:
+                        already_sent = True
+                        message = "✅ Successfully registered raffles.\n\n" + _format_stats_message(stats)
+                        await app.bot.send_message(chat_id=chat_id, text=message, parse_mode="HTML")
+                    else:
+                        already_sent = True
+                        await app.bot.send_message(
+                            chat_id=chat_id,
+                            text="✅ Discord raffle bot finished.\n\n(No statistics file was found.)",
+                        )
+            except OSError:
+                pass
+
+        await asyncio.sleep(5)
 
 
 async def _startup_notis_post_init(app: "Application") -> None:
