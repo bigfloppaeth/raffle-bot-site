@@ -11,6 +11,7 @@ Features:
 """
 
 import asyncio
+import html
 import json
 import os
 import subprocess
@@ -32,15 +33,14 @@ RAFFLE_PROCESS: Optional[subprocess.Popen] = None
 
 def _is_authorized(update: Update) -> bool:
     """Check if the incoming Telegram user is allowed to control the bot."""
-    allowed_id_str = os.getenv("TELEGRAM_ALLOWED_USER_ID")
+    allowed_id_str = (os.getenv("TELEGRAM_ALLOWED_USER_ID") or "").strip()
     if not allowed_id_str:
-        # If no ID configured, allow everyone (for quick local testing).
-        return True
+        return False
 
     try:
         allowed_id = int(allowed_id_str)
     except ValueError:
-        return True
+        return False
 
     user = update.effective_user
     return bool(user and user.id == allowed_id)
@@ -78,7 +78,7 @@ def _load_stats() -> Optional[Dict[str, Any]]:
 def _format_stats_message(stats: Dict[str, Any]) -> str:
     """Format a human-readable Telegram message from the stats structure (HTML)."""
     def _esc(s: str) -> str:
-        return str(s).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+        return html.escape(str(s))
 
     total_channels = stats.get("total_channels", 0)
     channels_processed = stats.get("channels_processed", 0)
@@ -219,13 +219,13 @@ async def stop_bot_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -
         RAFFLE_PROCESS = None
         return
 
-    RAFFLE_PROCESS.terminate()
-    try:
-        RAFFLE_PROCESS.wait(timeout=10)
-    except subprocess.TimeoutExpired:
-        RAFFLE_PROCESS.kill()
-
+    proc = RAFFLE_PROCESS
     RAFFLE_PROCESS = None
+    proc.terminate()
+    try:
+        proc.wait(timeout=10)
+    except subprocess.TimeoutExpired:
+        proc.kill()
     await update.message.reply_text("Discord raffle bot stopped.")
 
 
